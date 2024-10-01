@@ -1,20 +1,17 @@
 #!/usr/bin/env python
+import sys
 from argparse import ArgumentParser, ArgumentTypeError
 from fractions import Fraction
 from functools import lru_cache
-from signal import SIGPIPE, SIG_DFL, signal
+from signal import SIGINT, SIGPIPE, SIG_DFL, signal
 from sys import argv, stderr, stdout
-from typing import Generator, NoReturn, Union
+from typing import Callable, Iterator, NoReturn, Union
 
 import scipy
 
+FractionStr = Callable[[Fraction], str]
 Number = Union[Fraction, float, int]
-NumberGenerator = Generator[Fraction, None, None]
-
-
-def error(x: Union[Exception, str]) -> NoReturn:
-    print(f'{argv[0]}: {x}', file=stderr)
-    exit(1)
+NumberGenerator = Iterator[Fraction]
 
 
 @lru_cache(maxsize=None)
@@ -65,12 +62,9 @@ def inv_tr_nums(n: Number, d: Number) -> NumberGenerator:
     Fraction(2, 7)
     """
     while True:
-        try:
-            # yield d * beta(n, n + d)
-            yield 1 / Fraction((gamma(n + d) / (gamma(n) * gamma(d + 1))))
-            n += 1
-        except OverflowError as e:
-            error(e)
+        # yield d * beta(n, n + d)
+        yield 1 / Fraction((gamma(n + d) / (gamma(n) * gamma(d + 1))))
+        n += 1
 
 
 def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
@@ -107,7 +101,7 @@ def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
         yield x
 
 
-def pp(x: Fraction):
+def pp(x: Fraction) -> Fraction:
     """
     Pretty print by possibly rounding the denominator and reducing to
     simplest terms.
@@ -131,9 +125,22 @@ def pp(x: Fraction):
         return x.limit_denominator(10 ** args.round_fractions)
 
 
+# Monkey patch Fraction to respect rounding flags
+Fraction.__str__ = lambda self, original_str=Fraction.__str__: (
+    original_str(pp(self)))
+
+
 def main():
-    # Be nice about pipes and don't complain
+    # Be nice about ^C and pipes
+    signal(SIGINT, SIG_DFL)
     signal(SIGPIPE, SIG_DFL)
+
+    # Turn tracebacks to standard script error messages
+    def handle_exceptions(exception_type, exception, traceback) -> NoReturn:
+        print(f'{argv[0]}: {exception}', file=stderr)
+        exit(1)
+
+    sys.excepthook = handle_exceptions
 
     start = args.start
     dimension = args.dimension
@@ -142,8 +149,7 @@ def main():
     gap_gen = inv_gap_nums(start, dimension)
 
     while True:
-        print(f'{pp(next(tr_gen))} {pp(next(gap_gen))}')
-        # Be nice about pipes and do not buffer
+        print(f'{next(tr_gen)} {next(gap_gen)}')
         stdout.flush()
 
 
