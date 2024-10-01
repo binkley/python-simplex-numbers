@@ -135,8 +135,6 @@ def fraction_str_patch(self: Fraction,
     d = self.denominator
     if d > 0:
         digits = int(log10(d)) + 1
-    elif d == 0:  # TODO: Denominator cannot be 0
-        digits = 1
     else:
         digits = int(log10(-d)) + 1
 
@@ -149,7 +147,7 @@ def fraction_str_patch(self: Fraction,
             self.limit_denominator(10 ** max(args.round_fractions, digits)))
 
 
-def main():
+def setup_globals():  # pragma: no cover
     # Be nice about ^C and pipes
     signal(SIGINT, SIG_DFL)
     signal(SIGPIPE, SIG_DFL)
@@ -160,6 +158,12 @@ def main():
         exit(1)
 
     sys.excepthook = handle_exceptions
+    # Monkey patch Fraction to respect rounding flags
+    Fraction.__str__ = fraction_str_patch
+
+
+def main():  # pragma: no cover
+    setup_globals()
 
     start = args.start
     dimension = args.dimension
@@ -167,15 +171,12 @@ def main():
     tr_gen = inv_tr_nums(start, dimension)
     gap_gen = inv_gap_nums(start, dimension)
 
-    # Monkey patch Fraction to respect rounding flags
-    Fraction.__str__ = fraction_str_patch
-
     while True:
         print(f'{next(tr_gen)} {next(gap_gen)}')
         stdout.flush()
 
 
-def parse_args():
+def parse_args():  # pragma: no cover
     def parse_fraction(value):
         try:
             return Fraction(value)
@@ -240,4 +241,4 @@ if __name__ == '__main__':
     if args.unit_tests:
         unit_tests()
     else:
-        main()
+        main()  # pragma: no cover
