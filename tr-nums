@@ -3,6 +3,7 @@ import sys
 from argparse import ArgumentParser, ArgumentTypeError
 from fractions import Fraction
 from functools import lru_cache
+from math import log10
 from signal import SIGINT, SIGPIPE, SIG_DFL, signal
 from sys import argv, stderr, stdout
 from typing import Callable, Iterator, NoReturn, Union
@@ -91,43 +92,51 @@ def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
     >>> next(gen)
     Fraction(2, 7)
     """
-    x = Fraction(-1)
-    gen_inv_tr_nums = inv_tr_nums(n, d)
+    gap = Fraction(-1)
+    tr_gen = inv_tr_nums(n, d)
     # Skip ahead -- DOES NOT WORK for negative indices!
     for _ in range(int(n - 1)):
-        x += next(gen_inv_tr_nums)
+        gap += next(tr_gen)
     while True:
-        x += next(gen_inv_tr_nums)
-        yield x
+        gap += next(tr_gen)
+        yield gap
 
 
-def pp(x: Fraction) -> Fraction:
+def fraction_str_patch(self: Fraction,
+                       original_str: FractionStr = Fraction.__str__) \
+        -> str:
     """
     Pretty print by possibly rounding the denominator and reducing to
     simplest terms.
 
-    :param x: The number to possibly round.
-    :type x: Fraction
+    :param self: The fraction to possibly round.
+    :type self: Fraction
+    :param original_str: The original ``__str__`` method.
+    :type original_str: FractionStr
 
-    :return: The possibly rounded number.
+    :return: The possibly rounded fraction as a string.
     :rtype: Fraction
 
     :Examples:
     >>> args.round_fractions = 2
-    >>> pp(Fraction(1, 2))
-    Fraction(1, 2)
-    >>> pp(Fraction(101010101, 323232323))
-    Fraction(5, 16)
+    >>> fraction_str_patch(Fraction(1, 2))
+    '1/2'
+    >>> fraction_str_patch(Fraction(101, 323))
+    '101/323'
     """
-    if args.round_fractions is None:
-        return x
+    d = self.denominator
+    if d > 0:
+        digits = int(log10(d)) + 1
+    elif d == 0:  # TODO: Denominator cannot be 0
+        digits = 1
     else:
-        return x.limit_denominator(10 ** args.round_fractions)
+        digits = int(log10(-d)) + 1
 
-
-# Monkey patch Fraction to respect rounding flags
-Fraction.__str__ = lambda self, original_str=Fraction.__str__: (
-    original_str(pp(self)))
+    if args.round_fractions is None:
+        return original_str(self)
+    else:
+        return original_str(
+            self.limit_denominator(10 ** max(args.round_fractions, digits)))
 
 
 def main():
@@ -136,7 +145,7 @@ def main():
     signal(SIGPIPE, SIG_DFL)
 
     # Turn tracebacks to standard script error messages
-    def handle_exceptions(exception_type, exception, traceback) -> NoReturn:
+    def handle_exceptions(_, exception, __) -> NoReturn:
         print(f'{argv[0]}: {exception}', file=stderr)
         exit(1)
 
@@ -147,6 +156,9 @@ def main():
 
     tr_gen = inv_tr_nums(start, dimension)
     gap_gen = inv_gap_nums(start, dimension)
+
+    # Monkey patch Fraction to respect rounding flags
+    Fraction.__str__ = fraction_str_patch
 
     while True:
         print(f'{next(tr_gen)} {next(gap_gen)}')
