@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import typing
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, \
     ArgumentTypeError
 from fractions import Fraction
@@ -6,47 +7,49 @@ from functools import lru_cache
 from itertools import islice
 from signal import SIGPIPE, SIG_DFL, signal
 from sys import stdout
-from typing import Union
 
 import scipy
 
 DEFAULT_MAX_NUMBERS = 10
 
+Generator = typing.Generator[Fraction, None, None]
+Number = typing.Union[Fraction, float, int]
+
 
 @lru_cache(maxsize=None)
-def gamma(x: Union[Fraction, float, int]):
+def gamma(x: Number):
     """
-    A memoized version of the gamma function to improve performance.
-
-    Parameters:
-    x (Fraction): A value for which to compute the gamma function.
-
-    Returns:
-    float: The computed gamma value for the given x.
+    A memoized version of the Gamma function to improve performance.
     Note the return type to aid in chaining floating point operations.
 
-    Examples:
+    :param x: A value for which to compute the gamma function.
+    :type x: Fraction | float | int
+
+    :return: The computed value of Gamma(x).
+    :rtype: float
+
+    :Examples:
     >>> gamma(1)
     1.0
-
     >>> gamma(2)
     1.0
     """
     return scipy.special.gamma(float(x))
 
 
-def inv_tr_nums(n: Union[Fraction, float, int], d: Union[Fraction, float, int]):
+def inv_tr_nums(n: Number, d: Number) -> Generator:
     """
     Generate inverse triangular numbers.
 
-    Parameters:
-    n (Fraction): The starting index for the triangular number sequence.
-    d (Fraction): The dimension for the generalized triangular number.
+    :param n: The starting index for the triangular number sequence.
+    :type n: Fraction | float | int
+    :param d: The dimension for the generalized triangular number.
+    :type d: Fraction | float | int
 
-    Yields:
-    Fraction: The next inverse triangular number.
+    :return: The next inverse triangular number.
+    :rtype: Fraction
 
-    Examples:
+    :Examples:
     >>> # Standard triangular numbers
     >>> gen = inv_tr_nums(1, 2)
     >>> next(gen)
@@ -64,19 +67,19 @@ def inv_tr_nums(n: Union[Fraction, float, int], d: Union[Fraction, float, int]):
         n += 1
 
 
-def inv_gap_nums(n: Union[Fraction, float, int],
-                 d: Union[Fraction, float, int]):
+def inv_gap_nums(n: Number, d: Number) -> Generator:
     """
     Generate the preceding "gap" number inverse triangular numbers.
 
-    Parameters:
-    n (Fraction): The starting index for the triangular number sequence.
-    d (Fraction): The dimension for the generalized triangular number.
+    :param n: The starting index for the preceding gap number.
+    :type n: Fraction | float | int
+    :param d: The dimension for the preceding gap number.
+    :type d: Fraction | float | int
 
-    Yields:
-    Fraction: The next preceding gap number.
+    :return: The next preceding gap number.
+    :rtype: Fraction
 
-    Examples:
+    :Examples:
     >>> # Standard triangular numbers
     >>> gen = inv_gap_nums(1, 2)
     >>> next(gen)
@@ -98,15 +101,33 @@ def inv_gap_nums(n: Union[Fraction, float, int],
         yield x
 
 
+def pp(x: Fraction):
+    """
+    Pretty print by possibly rounding the denominator and reducing to
+    simplest terms.
+
+    :param x: The number to possibly round.
+    :type x: Fraction
+
+    :return: The possibly rounded number.
+    :rtype: Fraction
+
+    :Examples:
+    >>> args.round_fractions = 2
+    >>> pp(Fraction(1, 2))
+    Fraction(1, 2)
+    >>> pp(Fraction(101010101, 323232323))
+    Fraction(5, 16)
+    """
+    if args.round_fractions is None:
+        return x
+    else:
+        return x.limit_denominator(10 ** args.round_fractions)
+
+
 def main():
     # Be nice about pipes and don't complain
     signal(SIGPIPE, SIG_DFL)
-
-    def format(x: Fraction):
-        if args.round_fractions is None:
-            return x
-        else:
-            return x.limit_denominator(10 ** args.round_fractions)
 
     start = args.starting_index
     dimension = args.dimension
@@ -116,7 +137,7 @@ def main():
         gap_gen = inv_gap_nums(start, dimension)
 
         while True:
-            print(f'{format(next(tr_gen))} {format(next(gap_gen))}')
+            print(f'{pp(next(tr_gen))} {pp(next(gap_gen))}')
             # Be nice about pipes and do not buffer
             stdout.flush()
 
@@ -125,11 +146,11 @@ def main():
 
         gen = inv_tr_nums(start, dimension)
         for num in islice(gen, nums):
-            print(format(num))
+            print(pp(num))
         print('---')
         gen = inv_gap_nums(start, dimension)
         for num in islice(gen, nums + 1):
-            print(format(num))
+            print(pp(num))
 
 
 def parse_args():
