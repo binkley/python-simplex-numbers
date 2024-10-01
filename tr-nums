@@ -18,7 +18,7 @@ NumberGenerator = Iterator[Fraction]
 @lru_cache(maxsize=None)
 def gamma(x: Number):
     """
-    A memoized version of the Gamma function to improve performance.
+    Compute and memoize the Gamma function.
     Note the return type to aid in chaining floating point operations.
 
     :param x: A value for which to compute the gamma function.
@@ -128,7 +128,7 @@ def fraction_str_patch(self: Fraction,
         -> str:
     """
     Pretty print by possibly rounding the denominator and reducing to
-    simplest terms.
+    simplest form.
 
     :param self: The fraction to possibly round.
     :type self: Fraction
@@ -189,12 +189,12 @@ def main():  # pragma: no cover
 def parse_fraction(value: str) -> Fraction:
     """
     Parse a potential fraction.
-    Values cannot be 0 or negative integers (Gamma function explodes).
+    Values cannot be zero or negative integers (Gamma function explodes).
 
-    :param value: the number-like string to turn into a fraction.
+    :param value: The number-like string to turn into a fraction.
     :type value: str
 
-    :return: the corresponding fraction.
+    :return: The corresponding fraction.
     :rtype: Fraction
 
     :Examples:
