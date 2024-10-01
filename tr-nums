@@ -7,17 +7,20 @@ from itertools import islice
 from scipy.special import gamma
 
 
-def inv_tr_nums(d=2):
-    n = 1
+def inv_tr_nums(d=Fraction(2), n=Fraction(1)):
     while True:
         # yield d * beta(n, n + d)
-        yield 1 / Fraction((gamma(n + d) / (gamma(n) * gamma(d + 1))))
+        yield 1 / Fraction((gamma(float(n + d)) / (gamma(float(n)) * gamma(
+            float(d + 1)))))
         n += 1
 
 
-def inv_gap_nums(d=2):
+def inv_gap_nums(d=Fraction(2), n=Fraction(1)):
     x = -1
-    gen_inv_tr_nums = inv_tr_nums(d)
+    gen_inv_tr_nums = inv_tr_nums(d, n)
+    # Skip ahead -- DOES NOT WORK for negative indices!
+    for _ in range(int(n - 1)):
+        x += next(gen_inv_tr_nums)
     while True:
         x += next(gen_inv_tr_nums)
         yield x
@@ -27,23 +30,36 @@ N = 10
 
 
 def main():
+    def parse_fraction(value):
+        try:
+            return Fraction(value)
+        except ValueError:
+            raise argparse.ArgumentTypeError(f"Invalid fraction value: {value}")
+
     parser = argparse.ArgumentParser(
         description='Generate inverse triangular numbers and their gaps.'
     )
     parser.add_argument(
         '-d',
         '--dimension',
-        type=int,
-        default=2,
+        type=parse_fraction,
+        default=Fraction(2),
         help='triangular number dimension'
+    )
+    parser.add_argument(
+        '-n',
+        '--start',
+        type=parse_fraction,
+        default=Fraction(1),
+        help='start at nth triangular number'
     )
     args = parser.parse_args()
 
-    gen = inv_tr_nums(args.dimension)
+    gen = inv_tr_nums(args.dimension, args.start)
     for num in islice(gen, N):
         print(num)
     print('---')
-    gen = inv_gap_nums(args.dimension)
+    gen = inv_gap_nums(args.dimension, args.start)
     for num in islice(gen, N + 1):
         print(num)
 
