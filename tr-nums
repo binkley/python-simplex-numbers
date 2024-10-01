@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import argparse
+import signal
+import sys
 from fractions import Fraction
 from functools import lru_cache
 from itertools import islice
@@ -96,17 +98,31 @@ def inv_gap_nums(n: Union[Fraction, float, int],
 
 
 def main():
+    # Be nice about pipes and don't complain
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
     start = args.starting_index
     dimension = args.dimension
-    nums = args.max_numbers
 
-    gen = inv_tr_nums(start, dimension)
-    for num in islice(gen, nums):
-        print(num)
-    print('---')
-    gen = inv_gap_nums(start, dimension)
-    for num in islice(gen, nums + 1):
-        print(num)
+    if args.sequence_format:
+        tr_gen = inv_tr_nums(start, dimension)
+        gap_gen = inv_gap_nums(start, dimension)
+
+        while True:
+            print(f'{next(tr_gen)} {next(gap_gen)}')
+            # Be nice about pipes and do not buffer
+            sys.stdout.flush()
+
+    else:
+        nums = args.max_numbers
+
+        gen = inv_tr_nums(start, dimension)
+        for num in islice(gen, nums):
+            print(num)
+        print('---')
+        gen = inv_gap_nums(start, dimension)
+        for num in islice(gen, nums + 1):
+            print(num)
 
 
 def parse_args():
@@ -142,6 +158,12 @@ def parse_args():
         default=DEFAULT_MAX_NUMBERS,
         metavar='MAX',
         help='generate only MAX triangular numbers'
+    )
+    parser.add_argument(
+        '-S',
+        '--sequence-format',
+        action='store_true',
+        help='format output for an infinite sequence'
     )
     parser.add_argument(
         '-T',
