@@ -112,9 +112,8 @@ def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
     """
     tr_gen = inv_tr_nums(n, d)
 
-    # TODO: Broken
+    # TODO: Broken -- starting at -1 only works for n==1
     gap = Fraction(-1)
-    # Skip ahead -- DOES NOT WORK for negative indices!
     for _ in range(int(n - 1)):
         gap += next(tr_gen)
 
@@ -139,6 +138,10 @@ def fraction_str_patch(self: Fraction,
     :rtype: Fraction
 
     :Examples:
+    >>> fraction_str_patch(Fraction(1, 2))
+    '1/2'
+    >>> fraction_str_patch(Fraction(101, 323))
+    '101/323'
     >>> args.round_fractions = 2
     >>> fraction_str_patch(Fraction(1, 2))
     '1/2'
@@ -147,6 +150,8 @@ def fraction_str_patch(self: Fraction,
     >>> args.floating_point = True
     >>> fraction_str_patch(Fraction(1, 2))
     '0.5'
+    >>> fraction_str_patch(Fraction(101, 323))
+    '0.3126934984520124'
     """
     if args.floating_point:
         return str(float(self))
