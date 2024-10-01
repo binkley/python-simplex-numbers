@@ -4,13 +4,10 @@ from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, \
     ArgumentTypeError
 from fractions import Fraction
 from functools import lru_cache
-from itertools import islice
 from signal import SIGPIPE, SIG_DFL, signal
 from sys import stdout
 
 import scipy
-
-DEFAULT_MAX_NUMBERS = 10
 
 Generator = typing.Generator[Fraction, None, None]
 Number = typing.Union[Fraction, float, int]
@@ -132,25 +129,13 @@ def main():
     start = args.starting_index
     dimension = args.dimension
 
-    if args.sequence_format:
-        tr_gen = inv_tr_nums(start, dimension)
-        gap_gen = inv_gap_nums(start, dimension)
+    tr_gen = inv_tr_nums(start, dimension)
+    gap_gen = inv_gap_nums(start, dimension)
 
-        while True:
-            print(f'{pp(next(tr_gen))} {pp(next(gap_gen))}')
-            # Be nice about pipes and do not buffer
-            stdout.flush()
-
-    else:
-        nums = args.max_numbers
-
-        gen = inv_tr_nums(start, dimension)
-        for num in islice(gen, nums):
-            print(pp(num))
-        print('---')
-        gen = inv_gap_nums(start, dimension)
-        for num in islice(gen, nums + 1):
-            print(pp(num))
+    while True:
+        print(f'{pp(next(tr_gen))} {pp(next(gap_gen))}')
+        # Be nice about pipes and do not buffer
+        stdout.flush()
 
 
 def parse_args():
@@ -181,26 +166,12 @@ def parse_args():
         help='start at the INDEX-th triangular number'
     )
     parser.add_argument(
-        '-n',
-        '--max-numbers',
-        type=int,
-        default=DEFAULT_MAX_NUMBERS,
-        metavar='MAX',
-        help='generate only MAX triangular numbers'
-    )
-    parser.add_argument(
         '-r',
         '--round-fractions',
         type=int,
         default=None,
         metavar='DIGITS',
         help='round floating point denominators to DIGITS digits'
-    )
-    parser.add_argument(
-        '-S',
-        '--sequence-format',
-        action='store_true',
-        help='format output for an infinite sequence'
     )
     parser.add_argument(
         '-T',
