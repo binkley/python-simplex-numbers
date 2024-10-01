@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import argparse
 from fractions import Fraction
 from itertools import islice
 
@@ -25,21 +25,28 @@ def inv_gap_nums(d=2):
 
 N = 10
 
-gen = inv_tr_nums()
-for num in islice(gen, N):
-    print(num)
 
-print('---')
-gen = inv_tr_nums(3)
-for num in islice(gen, N):
-    print(num)
+def main():
+    parser = argparse.ArgumentParser(
+        description='Generate inverse triangular numbers and their gaps.'
+    )
+    parser.add_argument(
+        '--dimension',
+        '-d',
+        type=int,
+        default=2,
+        help='Dimension of triangular numbers'
+    )
+    args = parser.parse_args()
 
-print('---')
-gen = inv_gap_nums()
-for num in islice(gen, N):
-    print(num)
+    gen = inv_tr_nums(args.dimension)
+    for num in islice(gen, N):
+        print(num)
+    print('---')
+    gen = inv_gap_nums(args.dimension)
+    for num in islice(gen, N + 1):
+        print(num)
 
-print('---')
-gen = inv_gap_nums(3)
-for num in islice(gen, N):
-    print(num)
+
+if __name__ == '__main__':
+    main()
