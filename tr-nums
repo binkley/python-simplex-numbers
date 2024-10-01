@@ -9,6 +9,7 @@ from sys import argv, stderr, stdout
 from typing import Callable, Iterator, NoReturn, Union
 
 import scipy
+from numpy import isinf, isnan
 
 FractionStr = Callable[[Fraction], str]
 Number = Union[Fraction, float, int]
@@ -34,8 +35,21 @@ def gamma(x: Number):
     1.0
     >>> gamma(4)
     6.0
+    >>> gamma(0)
+    Traceback (most recent call last):
+        ...
+    ValueError: Gamma function explodes at 0
+    >>> gamma(-1)
+    Traceback (most recent call last):
+        ...
+    ValueError: Gamma function explodes at -1
     """
-    return scipy.special.gamma(float(x))
+    g = scipy.special.gamma(float(x))
+
+    if not isnan(g) and not isinf(g):
+        return g
+
+    raise ValueError(f'Gamma function explodes at {x}')
 
 
 def inv_tr_nums(n: Number, d: Number) -> NumberGenerator:
@@ -97,11 +111,14 @@ def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
     >>> next(gen)
     Fraction(2, 7)
     """
-    gap = Fraction(-1)
     tr_gen = inv_tr_nums(n, d)
+
+    # TODO: Broken
+    gap = Fraction(-1)
     # Skip ahead -- DOES NOT WORK for negative indices!
     for _ in range(int(n - 1)):
         gap += next(tr_gen)
+
     while True:
         gap += next(tr_gen)
         yield gap
@@ -154,7 +171,8 @@ def setup_globals():  # pragma: no cover
 
     # Turn tracebacks to standard script error messages
     def handle_exceptions(_, exception, __) -> NoReturn:
-        print(f'{argv[0]}: {exception}', file=stderr)
+        print(f'{argv[0]}: {type(exception).__name__}: {exception}',
+              file=stderr)
         exit(1)
 
     sys.excepthook = handle_exceptions
@@ -176,13 +194,48 @@ def main():  # pragma: no cover
         stdout.flush()
 
 
-def parse_args():  # pragma: no cover
-    def parse_fraction(value):
-        try:
-            return Fraction(value)
-        except ValueError:
-            raise ArgumentTypeError(f"Invalid fraction value: {value}")
+def parse_fraction(value):
+    """
+    Parse a potential fraction.
+    Values cannot be 0 or negative integers (Gamma function explodes).
 
+    :param value: the number-like string to turn into a fraction.
+    :type value: a string to parse
+
+    :return: the corresponding fraction.
+    :rtype: Fraction
+
+    :Examples:
+    >>> parse_fraction('1')
+    Fraction(1, 1)
+    >>> parse_fraction('1/2')
+    Fraction(1, 2)
+    >>> parse_fraction('-0.5')
+    Fraction(-1, 2)
+    >>> parse_fraction('0')
+    Traceback (most recent call last):
+        ...
+    argparse.ArgumentTypeError: 0 and negative integers explode: 0
+    >>> parse_fraction('-1')
+    Traceback (most recent call last):
+        ...
+    argparse.ArgumentTypeError: 0 and negative integers explode: -1
+    >>> parse_fraction('pi')
+    Traceback (most recent call last):
+        ...
+    argparse.ArgumentTypeError: Invalid fraction value: pi
+    """
+    try:
+        f = Fraction(value)
+        if f.is_integer() and f <= 0:
+            raise ArgumentTypeError(
+                f'0 and negative integers explode: {value}')
+        return f
+    except ValueError:
+        raise ArgumentTypeError(f'Invalid fraction value: {value}')
+
+
+def parse_args():  # pragma: no cover
     parser = ArgumentParser(
         description='Print inverse triangular numbers and their gaps.'
     )
