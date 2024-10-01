@@ -102,6 +102,12 @@ def main():
     # Be nice about pipes and don't complain
     signal(SIGPIPE, SIG_DFL)
 
+    def format(x: Fraction):
+        if args.round_fractions is None:
+            return x
+        else:
+            return x.limit_denominator(10 ** args.round_fractions)
+
     start = args.starting_index
     dimension = args.dimension
 
@@ -110,7 +116,7 @@ def main():
         gap_gen = inv_gap_nums(start, dimension)
 
         while True:
-            print(f'{next(tr_gen)} {next(gap_gen)}')
+            print(f'{format(next(tr_gen))} {format(next(gap_gen))}')
             # Be nice about pipes and do not buffer
             stdout.flush()
 
@@ -119,11 +125,11 @@ def main():
 
         gen = inv_tr_nums(start, dimension)
         for num in islice(gen, nums):
-            print(num)
+            print(format(num))
         print('---')
         gen = inv_gap_nums(start, dimension)
         for num in islice(gen, nums + 1):
-            print(num)
+            print(format(num))
 
 
 def parse_args():
@@ -162,6 +168,14 @@ def parse_args():
         help='generate only MAX triangular numbers'
     )
     parser.add_argument(
+        '-r',
+        '--round-fractions',
+        type=int,
+        default=None,
+        metavar='DIGITS',
+        help='round floating point denominators to DIGITS digits'
+    )
+    parser.add_argument(
         '-S',
         '--sequence-format',
         action='store_true',
@@ -173,6 +187,7 @@ def parse_args():
         action='store_true',
         help='run unit tests instead of printing'
     )
+
     return parser.parse_args()
 
 
