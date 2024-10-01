@@ -3,7 +3,6 @@ import sys
 from argparse import ArgumentParser, ArgumentTypeError
 from fractions import Fraction
 from functools import lru_cache
-from math import log10
 from signal import SIGINT, SIGPIPE, SIG_DFL, signal
 from sys import argv, stderr, stdout
 from typing import Callable, Iterator, NoReturn, Union
@@ -144,24 +143,17 @@ def fraction_str_patch(self: Fraction,
     >>> fraction_str_patch(Fraction(1, 2))
     '1/2'
     >>> fraction_str_patch(Fraction(101, 323))
-    '101/323'
+    '5/16'
     >>> args.floating_point = True
     >>> fraction_str_patch(Fraction(1, 2))
     '0.5'
     """
-    d = self.denominator
-    if d > 0:
-        digits = int(log10(d)) + 1
-    else:
-        digits = int(log10(-d)) + 1
-
     if args.floating_point:
         return str(float(self))
     elif args.round_fractions is None:
         return original_str(self)
     else:
-        return original_str(
-            self.limit_denominator(10 ** max(args.round_fractions, digits)))
+        return original_str(self.limit_denominator(10 ** args.round_fractions))
 
 
 def setup_globals():  # pragma: no cover
@@ -194,13 +186,13 @@ def main():  # pragma: no cover
         stdout.flush()
 
 
-def parse_fraction(value):
+def parse_fraction(value: str) -> Fraction:
     """
     Parse a potential fraction.
     Values cannot be 0 or negative integers (Gamma function explodes).
 
     :param value: the number-like string to turn into a fraction.
-    :type value: a string to parse
+    :type value: str
 
     :return: the corresponding fraction.
     :rtype: Fraction
