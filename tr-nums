@@ -128,6 +128,9 @@ def fraction_str_patch(self: Fraction,
     '1/2'
     >>> fraction_str_patch(Fraction(101, 323))
     '101/323'
+    >>> args.floating_point = True
+    >>> fraction_str_patch(Fraction(1, 2))
+    '0.5'
     """
     d = self.denominator
     if d > 0:
@@ -137,7 +140,9 @@ def fraction_str_patch(self: Fraction,
     else:
         digits = int(log10(-d)) + 1
 
-    if args.round_fractions is None:
+    if args.floating_point:
+        return str(float(self))
+    elif args.round_fractions is None:
         return original_str(self)
     else:
         return original_str(
@@ -180,6 +185,8 @@ def parse_args():
     parser = ArgumentParser(
         description='Print inverse triangular numbers and their gaps.'
     )
+    group = parser.add_mutually_exclusive_group()
+
     parser.add_argument(
         '-d',
         '--dimension',
@@ -189,8 +196,14 @@ def parse_args():
         help='generate %(metavar)s-dimensional triangular numbers, can be '
              'non-integral (default: %(default)s)'
     )
+    group.add_argument(
+        '-f',
+        '--floating-point',
+        action='store_true',
+        help='print floating point numbers instead of fractions'
+    )
     parser.add_argument(
-        '-i',
+        '-n',
         '--start',
         type=parse_fraction,
         default=1,
@@ -198,7 +211,7 @@ def parse_args():
         help='start at the %(metavar)s-th triangular number, can be '
              'non-integral (default: %(default)s)'
     )
-    parser.add_argument(
+    group.add_argument(
         '-r',
         '--round-fractions',
         type=int,
