@@ -6,6 +6,8 @@ from itertools import islice
 # from scipy.special import beta
 from scipy.special import gamma
 
+DEFAULT_MAX_NUMBERS = 10
+
 
 def inv_tr_nums(d=Fraction(2), n=Fraction(1)):
     while True:
@@ -26,9 +28,6 @@ def inv_gap_nums(d=Fraction(2), n=Fraction(1)):
         yield x
 
 
-N = 10
-
-
 def main():
     def parse_fraction(value):
         try:
@@ -44,23 +43,33 @@ def main():
         '--dimension',
         type=parse_fraction,
         default=Fraction(2),
-        help='triangular number dimension'
+        metavar='DIM',
+        help='generate triangular numbers of DIM dimension'
+    )
+    parser.add_argument(
+        '-i',
+        '--starting-index',
+        type=parse_fraction,
+        default=Fraction(1),
+        metavar='INDEX',
+        help='start at the INDEX-th triangular number'
     )
     parser.add_argument(
         '-n',
-        '--start',
-        type=parse_fraction,
-        default=Fraction(1),
-        help='start at nth triangular number'
+        '--max-numbers',
+        type=int,
+        default=DEFAULT_MAX_NUMBERS,
+        metavar='MAX',
+        help='generate only MAX triangular numbers'
     )
     args = parser.parse_args()
 
-    gen = inv_tr_nums(args.dimension, args.start)
-    for num in islice(gen, N):
+    gen = inv_tr_nums(args.dimension, args.starting_index)
+    for num in islice(gen, args.max_numbers):
         print(num)
     print('---')
-    gen = inv_gap_nums(args.dimension, args.start)
-    for num in islice(gen, N + 1):
+    gen = inv_gap_nums(args.dimension, args.starting_index)
+    for num in islice(gen, args.max_numbers + 1):
         print(num)
 
 
