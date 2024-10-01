@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, \
-    ArgumentTypeError
+from argparse import ArgumentParser, ArgumentTypeError
 from fractions import Fraction
 from functools import lru_cache
 from signal import SIGPIPE, SIG_DFL, signal
@@ -45,7 +44,7 @@ def inv_tr_nums(n: Number, d: Number) -> NumberGenerator:
     """
     Generate inverse triangular numbers.
 
-    :param n: The starting index for the triangular number sequence.
+    :param n: The starting position for the triangular number sequence.
     :type n: Fraction | float | int
     :param d: The dimension for the generalized triangular number.
     :type d: Fraction | float | int
@@ -78,7 +77,7 @@ def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
     """
     Generate the preceding "gap" number inverse triangular numbers.
 
-    :param n: The starting index for the preceding gap number.
+    :param n: The starting position for the preceding gap number.
     :type n: Fraction | float | int
     :param d: The dimension for the preceding gap number.
     :type d: Fraction | float | int
@@ -136,7 +135,7 @@ def main():
     # Be nice about pipes and don't complain
     signal(SIGPIPE, SIG_DFL)
 
-    start = args.starting_index
+    start = args.start
     dimension = args.dimension
 
     tr_gen = inv_tr_nums(start, dimension)
@@ -156,8 +155,7 @@ def parse_args():
             raise ArgumentTypeError(f"Invalid fraction value: {value}")
 
     parser = ArgumentParser(
-        description='Print inverse triangular numbers and their gaps.',
-        formatter_class=ArgumentDefaultsHelpFormatter
+        description='Print inverse triangular numbers and their gaps.'
     )
     parser.add_argument(
         '-d',
@@ -165,15 +163,17 @@ def parse_args():
         type=parse_fraction,
         default=2,
         metavar='DIM',
-        help='generate triangular numbers of DIM dimension'
+        help='generate %(metavar)s-dimensional triangular numbers, can be '
+             'non-integral (default: %(default)s)'
     )
     parser.add_argument(
         '-i',
-        '--starting-index',
+        '--start',
         type=parse_fraction,
         default=1,
-        metavar='INDEX',
-        help='start at the INDEX-th triangular number'
+        metavar='POS',
+        help='start at the %(metavar)s-th triangular number, can be '
+             'non-integral (default: %(default)s)'
     )
     parser.add_argument(
         '-r',
@@ -181,7 +181,7 @@ def parse_args():
         type=int,
         default=None,
         metavar='DIGITS',
-        help='round floating point denominators to DIGITS digits'
+        help='round floating point denominators to %(metavar)s digits'
     )
     parser.add_argument(
         '-T',
