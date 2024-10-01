@@ -31,11 +31,11 @@ def main():
         description='Generate inverse triangular numbers and their gaps.'
     )
     parser.add_argument(
-        '--dimension',
         '-d',
+        '--dimension',
         type=int,
         default=2,
-        help='Dimension of triangular numbers'
+        help='triangular number dimension'
     )
     args = parser.parse_args()
 
