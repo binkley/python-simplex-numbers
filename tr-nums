@@ -41,6 +41,7 @@ def gamma(x: Number):
 def inv_tr_nums(n: Number, d: Number) -> NumberGenerator:
     """
     Generate inverse triangular numbers.
+    Avoid negative integer positions and zero.
 
     :param n: The starting position for the triangular number sequence.
     :type n: Fraction | float | int
@@ -61,6 +62,10 @@ def inv_tr_nums(n: Number, d: Number) -> NumberGenerator:
     >>> gen = inv_tr_nums(2, 2.5)
     >>> next(gen)
     Fraction(2, 7)
+    >>> # Negative triangular numbers
+    >>> gen = inv_tr_nums(-0.5, 2)
+    >>> next(gen)
+    Fraction(-8, 1)
     """
     while True:
         # yield d * beta(n, n + d)
