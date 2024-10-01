@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import argparse
-import signal
-import sys
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, \
+    ArgumentTypeError
 from fractions import Fraction
 from functools import lru_cache
 from itertools import islice
+from signal import SIGPIPE, SIG_DFL, signal
+from sys import stdout
 from typing import Union
 
 import scipy
@@ -99,7 +100,7 @@ def inv_gap_nums(n: Union[Fraction, float, int],
 
 def main():
     # Be nice about pipes and don't complain
-    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    signal(SIGPIPE, SIG_DFL)
 
     start = args.starting_index
     dimension = args.dimension
@@ -111,7 +112,7 @@ def main():
         while True:
             print(f'{next(tr_gen)} {next(gap_gen)}')
             # Be nice about pipes and do not buffer
-            sys.stdout.flush()
+            stdout.flush()
 
     else:
         nums = args.max_numbers
@@ -130,16 +131,17 @@ def parse_args():
         try:
             return Fraction(value)
         except ValueError:
-            raise argparse.ArgumentTypeError(f"Invalid fraction value: {value}")
+            raise ArgumentTypeError(f"Invalid fraction value: {value}")
 
-    parser = argparse.ArgumentParser(
-        description='Print inverse triangular numbers and their gaps.'
+    parser = ArgumentParser(
+        description='Print inverse triangular numbers and their gaps.',
+        formatter_class=ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
         '-d',
         '--dimension',
         type=parse_fraction,
-        default=Fraction(2),
+        default=2,
         metavar='DIM',
         help='generate triangular numbers of DIM dimension'
     )
@@ -147,7 +149,7 @@ def parse_args():
         '-i',
         '--starting-index',
         type=parse_fraction,
-        default=Fraction(1),
+        default=1,
         metavar='INDEX',
         help='start at the INDEX-th triangular number'
     )
@@ -175,8 +177,8 @@ def parse_args():
 
 
 def unit_tests():
-    import doctest
-    doctest.testmod()
+    from doctest import testmod
+    testmod()
 
 
 if __name__ == '__main__':
