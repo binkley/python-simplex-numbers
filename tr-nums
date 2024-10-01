@@ -1,12 +1,36 @@
 #!/usr/bin/env python
 import argparse
 from fractions import Fraction
+from functools import lru_cache
 from itertools import islice
 
 # from scipy.special import beta
-from scipy.special import gamma
+# from scipy.special import gamma
+import scipy
 
 DEFAULT_MAX_NUMBERS = 10
+
+
+@lru_cache(maxsize=None)
+def gamma(x: Fraction):
+    """
+    A memoized version of the gamma function to improve performance.
+
+    Parameters:
+    x (Fraction): A value for which to compute the gamma function.
+
+    Returns:
+    float: The computed gamma value for the given x.
+    Note the return type to aid in chaining floating point operations.
+
+    Examples:
+    >>> gamma(1)
+    1.0
+
+    >>> gamma(2)
+    1.0
+    """
+    return scipy.special.gamma(float(x))
 
 
 def inv_tr_nums(n: Fraction, d: Fraction):
@@ -29,8 +53,7 @@ def inv_tr_nums(n: Fraction, d: Fraction):
     """
     while True:
         # yield d * beta(n, n + d)
-        yield 1 / Fraction((gamma(float(n + d)) / (gamma(float(n)) * gamma(
-            float(d + 1)))))
+        yield 1 / Fraction((gamma(n + d) / (gamma(n) * gamma(d + 1))))
         n += 1
 
 
@@ -52,7 +75,7 @@ def inv_gap_nums(n: Fraction, d: Fraction):
     >>> next(gen)
     Fraction(1, 3)
     """
-    x = -1
+    x = Fraction(-1)
     gen_inv_tr_nums = inv_tr_nums(n, d)
     # Skip ahead -- DOES NOT WORK for negative indices!
     for _ in range(int(n - 1)):
