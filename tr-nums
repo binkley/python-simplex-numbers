@@ -1,16 +1,21 @@
 #!/usr/bin/env python
-import typing
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, \
     ArgumentTypeError
 from fractions import Fraction
 from functools import lru_cache
 from signal import SIGPIPE, SIG_DFL, signal
 from sys import argv, stderr, stdout
+from typing import Generator, NoReturn, Union
 
 import scipy
 
-Generator = typing.Generator[Fraction, None, None]
-Number = typing.Union[Fraction, float, int]
+Number = Union[Fraction, float, int]
+NumberGenerator = Generator[Fraction, None, None]
+
+
+def error(x: Union[Exception, str]) -> NoReturn:
+    print(f'{argv[0]}: {x}', file=stderr)
+    exit(1)
 
 
 @lru_cache(maxsize=None)
@@ -36,7 +41,7 @@ def gamma(x: Number):
     return scipy.special.gamma(float(x))
 
 
-def inv_tr_nums(n: Number, d: Number) -> Generator:
+def inv_tr_nums(n: Number, d: Number) -> NumberGenerator:
     """
     Generate inverse triangular numbers.
 
@@ -66,11 +71,10 @@ def inv_tr_nums(n: Number, d: Number) -> Generator:
             yield 1 / Fraction((gamma(n + d) / (gamma(n) * gamma(d + 1))))
             n += 1
         except OverflowError as e:
-            print(f'{argv[0]}: {e}', file=stderr)
-            exit(1)
+            error(e)
 
 
-def inv_gap_nums(n: Number, d: Number) -> Generator:
+def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
     """
     Generate the preceding "gap" number inverse triangular numbers.
 
