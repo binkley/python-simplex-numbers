@@ -201,12 +201,14 @@ def setup_globals():  # pragma: no cover
     signal(SIGPIPE, SIG_DFL)
 
     # Turn tracebacks to standard script error messages
-    def handle_exceptions(_, exception, __) -> NoReturn:
-        print(f'{argv[0]}: {type(exception).__name__}: {exception}',
-              file=stderr)
-        exit(1)
+    if not args.debug:
+        def handle_exceptions(_, exception, __) -> NoReturn:
+            print(f'{argv[0]}: {type(exception).__name__}: {exception}',
+                  file=stderr)
+            exit(1)
 
-    sys.excepthook = handle_exceptions
+        sys.excepthook = handle_exceptions
+
     # Monkey patch Fraction to respect rounding flags
     Fraction.__str__ = fraction_str_patch
 
@@ -289,6 +291,11 @@ def parse_args():  # pragma: no cover
     )
     group = parser.add_mutually_exclusive_group()
 
+    group.add_argument(
+        '--debug',
+        action='store_true',
+        help='print stack traces on error'
+    )
     parser.add_argument(
         '-d',
         '--dimension',
