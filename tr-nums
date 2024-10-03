@@ -94,12 +94,20 @@ def inv_tr_nums(n: Number, d: Number) -> NumberGenerator:
     >>> # Negative triangular numbers
     >>> gen = inv_tr_nums(-0.5, 2)
     >>> next(gen)
-    Fraction(-8, 1)
+    Fraction(-2, 1)
     """
-    while True:
-        # yield d * beta(n, n + d)
-        yield 1 / Fraction((gamma(n + d) / (gamma(n) * gamma(d + 1))))
-        n += 1
+    if 2 == d:
+        gap_gen = inv_gap_nums(n, d)
+        x = -1
+        while True:
+            y = next(gap_gen)
+            yield y - x
+            x = y
+    else:
+        while True:
+            # yield d * beta(n, n + d)
+            yield 1 / Fraction((gamma(n + d) / (gamma(n) * gamma(d + 1))))
+            n += 1
 
 
 def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
