@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import sys
 from argparse import ArgumentParser, ArgumentTypeError
 from fractions import Fraction
@@ -16,7 +17,7 @@ NumberGenerator = Iterator[Fraction]
 
 
 @lru_cache(maxsize=None)
-def gamma(x: Number):
+def gamma(x: Number) -> float:
     """
     Compute and memoize the Gamma function.
     Note the return type to aid in chaining floating point operations.
@@ -27,7 +28,7 @@ def gamma(x: Number):
     :return: The computed value of Gamma(x).
     :rtype: float
 
-    :raises ValueType: If the computed value is infinite or NaN.
+    :raises ValueError: If the computed value is infinite or NaN.
 
     See also <https://en.wikipedia.org/wiki/Gamma_function>,
     <https://en.wikipedia.org/wiki/Beta_function>.
@@ -233,10 +234,15 @@ def parse_fraction(value: str, zero_ok: bool) -> Fraction:
     Values cannot be zero or negative integers (Gamma function explodes).
 
     :param value: The number-like string to turn into a fraction.
-    :type value: str
+    :type value: Str
+    :param zero_ok: Parse 0 without raising an exception.
+    :type zero_ok: bool
 
     :return: The corresponding fraction.
     :rtype: Fraction
+
+    :raises ValueError: If the value is a negative integer.
+    :raises ValueError: If the value is zero and ``zero_ok`` is ``False``.
 
     :Examples:
     >>> parse_fraction('1', True)
