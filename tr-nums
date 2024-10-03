@@ -104,57 +104,41 @@ def inv_tr_nums(n: Number, d: Number) -> NumberGenerator:
 
 def inv_gap_nums(n: Number, d: Number) -> NumberGenerator:
     """
-    Generate the preceding "gap" number inverse triangular numbers.
+    Generate the succeeding "gap" number for inverse triangular numbers.
     Assume no zero or negative integer positions or dimensions.
 
-    :param n: The starting position for the preceding gap number.
+    :param n: The starting position for the succeeding gap number.
     :type n: Fraction | float | int
-    :param d: The dimension for the preceding gap number.
+    :param d: The dimension for the succeeding gap number.
     :type d: Fraction | float | int
 
-    :return: The next preceding gap number.
+    :return: The next succeeding gap number.
     :rtype: Fraction
 
     :Examples:
     >>> # Standard triangular numbers
     >>> gen = inv_gap_nums(1, 2)
     >>> next(gen)
-    Fraction(-1, 1)
-    >>> next(gen)
     Fraction(0, 1)
     >>> next(gen)
     Fraction(1, 3)
     >>> next(gen)
     Fraction(1, 2)
-    >>> # Standard tetrahedral numbers
     >>> gen = inv_gap_nums(1, 3)
     >>> next(gen)
-    Fraction(-1, 1)
-    >>> next(gen)
-    Fraction(0, 1)
-    >>> next(gen)
-    Fraction(1, 4)
-    >>> next(gen)
-    Fraction(7, 20)
-    >>> # Fractional dimension triangular numbers
-    >>> gen = inv_tr_nums(1, 2.5)
-    >>> next(gen)
-    Fraction(1, 1)
-    >>> next(gen)
-    Fraction(2, 7)
+    Traceback (most recent call last):
+        ...
+    NotImplementedError: UNIMPLEMENTED: d == 3
     """
-    tr_gen = inv_tr_nums(n, d)
 
-    # TODO: Broken -- starting at -1 only works for n==1
-    if n == 1:
-        gap = Fraction(-1)
-    else:
-        raise NotImplementedError(f'UNIMPLEMENTED: n == {n}')
+    # TODO: Broken -- only works for 2 dimensions
+    if not d == 2:
+        raise NotImplementedError(f'UNIMPLEMENTED: d == {d}')
 
+    n = Fraction(n)
     while True:
-        tr = next(tr_gen)
-        yield gap
-        gap += tr
+        yield (n - 1) / (n + 1)
+        n += 1
 
 
 def fraction_str_patch(self: Fraction,
@@ -224,7 +208,11 @@ def main():  # pragma: no cover
     gap_gen = inv_gap_nums(start, dimension)
 
     while True:
-        print(f'{next(tr_gen)} {next(gap_gen)}')
+        if 2 == dimension:
+            gap = next(gap_gen)
+        else:
+            gap = '-'
+        print(f'{next(tr_gen)} {gap}')
         stdout.flush()
 
 
