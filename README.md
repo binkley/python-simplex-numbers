@@ -43,7 +43,7 @@ The script follows several good practices for Python as command-line including
 command-line option handling.
 See the `-h` option for usage.
 
-## Coverage
+## For developers
 
 Present code coverage is **100%** via my favorite Python test library,
 [`doctest`](https://docs.python.org/3/library/doctest.html
@@ -58,3 +58,9 @@ In the meanwhile, if this interests you, you can open any [CI workflow
 run](https://github.com/binkley/publishing-pipeline/actions
 "The Actions tab on repo page") (drill into the run), and at the bottom will
 be an "artifact" of a ZIP with the full HTML coverage report.
+
+It is very tempting to add mutation testing ("test the tests") via the
+`mutmut` library; however, this adds far too many libraries (20) to
+`requirements.txt` for a simple demo project akin to JavaScript dependency
+management.
+A pity.
