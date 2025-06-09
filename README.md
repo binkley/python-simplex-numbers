@@ -9,3 +9,9 @@ align="right" width="10%" height="auto"/>
 [![pull requests](https://img.shields.io/github/issues-pr/binkley/python-simplex-numbers.svg)](https://github.com/binkley/python-simplex-numbers/pulls)
 [![issues](https://img.shields.io/github/issues/binkley/python-simplex-numbers.svg)](https://github.com/binkley/python-simplex-numbers/issues/)
 [![license](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/public-domain/cc0/)
+
+You want to look at the [`tr-nums`](./tr-nums) Python script.
+It has two ways to run:
+
+- `tr-nums [-h]` for a continuous list (try piping to `head`)
+- `tr-nums -T` runs the unit tests (doctests)
