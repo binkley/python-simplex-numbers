@@ -15,3 +15,18 @@ It has two ways to run:
 
 - `tr-nums [-h]` for a continuous list (try piping to `head`)
 - `tr-nums -T` runs the unit tests (doctests)
+
+## What is this about?
+
+The ["Triangular numbers"](https://en.wikipedia.org/wiki/Triangular_number)
+article from Wikipedia is a good introduction to the subject.
+Triangular numbers are a common special case of the larger area of _simplex
+numbers_.
+
+This script infinitely generates the **inverses** (reciprocals) of the
+triangular or simplex numbers.
+The inverses have interesting properties including that the sum of all
+triangular number reciprocals is **2** making them easier to work with in
+infinite series than the standard non-inverse form.
+
+See the `-h` option for usage.
