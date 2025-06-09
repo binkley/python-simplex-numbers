@@ -16,13 +16,13 @@ It has two ways to run:
 - `tr-nums [-h]` for a continuous list (try piping to `head`)
 - `tr-nums -T` runs the unit tests (doctests)
 
+## What is this about?
+
 <a href="https://en.wikipedia.org/wiki/Triangular_number)">
 <img src="./images/simplex-hierarchy.png"
 alt="Simplex number hierarchy from Wikipedia"
 align="right" width="20%" height="auto"/>
 </a>
-
-## What is this about?
 
 The ["Triangular numbers"](https://en.wikipedia.org/wiki/Triangular_number)
 article from Wikipedia is a good introduction to the subject.
