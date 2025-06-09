@@ -1,0 +1,19 @@
+name: Unit tests
+
+on: [push]
+
+jobs:
+  tr-nums:
+    runs-on: ubuntu-latest
+    name: unit tests
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+      - run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          ./tr-nums -T
