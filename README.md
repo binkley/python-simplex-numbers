@@ -18,10 +18,18 @@ It has two ways to run:
 
 ## What is this about?
 
+<a href="https://en.wikipedia.org/wiki/Triangular_number)">
+<img src="./images/simplex-hierarchy.png"
+alt="Simplex number hierarchy from Wikipedia"
+align="right" width="20%" height="auto"/>
+</a>
+
 The ["Triangular numbers"](https://en.wikipedia.org/wiki/Triangular_number)
 article from Wikipedia is a good introduction to the subject.
 Triangular numbers are a common special case of the larger area of _simplex
 numbers_.
+The article has many good or even beautiful illustrations such as the one
+shown on the side.
 
 This script infinitely generates the **inverses** (reciprocals) of the
 triangular or simplex numbers.
