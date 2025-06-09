@@ -46,7 +46,10 @@ See the `-h` option for usage.
 
 Present code coverage is **100%** via my favorite Python test library,
 [`doctest`](https://docs.python.org/3/library/doctest.html
-"Your dessert topping and floor wax: document example usage that doubles as test cases").
+"Your dessert topping and floor wax: document example usage that doubles as test cases"),
+and the excellent [`coverage`](https://coverage.readthedocs.io/
+"Sleep better at night knowing that you didn't forget to test something")
+library.
 
 I don't have a convenient way to plug in Python test coverage as a badge or to
 fail the build if coverage drops, at least not as how I'm used to with xUnit
