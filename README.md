@@ -5,7 +5,7 @@ align="right" width="10%" height="auto"/>
 
 # Demo script for simplex (triangular) numbers in Python
 
-[![build](https://github.com/binkley/python-simplex-numbers/actions/workflows/pipeline.yml/badge.svg)](https://github.com/binkley/python-simplex-numbers/actions)
+[![build](https://github.com/binkley/python-simplex-numbers/actions/workflows/ci.yml/badge.svg)](https://github.com/binkley/python-simplex-numbers/actions)
 [![pull requests](https://img.shields.io/github/issues-pr/binkley/python-simplex-numbers.svg)](https://github.com/binkley/python-simplex-numbers/pulls)
 [![issues](https://img.shields.io/github/issues/binkley/python-simplex-numbers.svg)](https://github.com/binkley/python-simplex-numbers/issues/)
 [![license](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/public-domain/cc0/)
