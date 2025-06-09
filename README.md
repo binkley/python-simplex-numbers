@@ -18,7 +18,8 @@ It has two ways to run:
 
 ## What is this about?
 
-<a href="https://en.wikipedia.org/wiki/Triangular_number)">
+<a href="https://en.wikipedia.org/wiki/Triangular_number"
+title="Gateway to recreational maths (triangular numbers) on Wikipedia">
 <img src="./images/simplex-hierarchy.png"
 alt="Simplex number hierarchy from Wikipedia"
 align="right" width="20%" height="auto"/>
