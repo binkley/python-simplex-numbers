@@ -38,6 +38,8 @@ The inverses have interesting properties including that the sum of all
 triangular number reciprocals is **2** making them easier to work with in
 infinite series than the standard non-inverse form.
 
+The script follows several good practices for Python as command-line including
+command-line option handling.
 See the `-h` option for usage.
 
 ## Coverage
