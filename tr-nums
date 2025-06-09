@@ -49,7 +49,8 @@ def gamma(x: Number) -> float:
         ...
     ValueError: Gamma function explodes at -1
     """
-    g = scipy.special.gamma(float(x))
+    # NB -- Numpy 2.0 returns a library type rather than `float`
+    g = float(scipy.special.gamma(float(x)))
 
     if not isinf(g) and not isnan(g):
         return g
