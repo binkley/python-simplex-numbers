@@ -51,11 +51,8 @@ and the excellent [`coverage`](https://coverage.readthedocs.io/
 "Sleep better at night knowing that you didn't forget to test something")
 library.
 
-I don't have a convenient way to plug in Python test coverage as a badge or to
-fail the build if coverage drops, at least not as how I'm used to with xUnit
-XML files from JVM projects, and this is an area for me to research if only to
-scratch an itch.
-
+I need to research how to plug in test coverage as a GitHub badge for README,
+but the CI build does fail when coverage drops.
 In the meanwhile, if this interests you, you can open any [CI workflow
 run](https://github.com/binkley/publishing-pipeline/actions
 "The Actions tab on repo page") (drill into the run), and at the bottom will
