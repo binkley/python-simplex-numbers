@@ -38,3 +38,18 @@ triangular number reciprocals is **2** making them easier to work with in
 infinite series than the standard non-inverse form.
 
 See the `-h` option for usage.
+
+## Coverage
+
+Present code coverage is 100% via my favorite Python test library,
+[`doctest`](https://docs.python.org/3/library/doctest.html).
+
+I don't have a convenient way to plug in Python test coverage as a badge or to
+fail the build if coverage drops, at least not as how I'm used to with xUnit
+XML files from JVM projects, and this is an area for me to research if only to
+scratch an itch.
+
+In the meanwhile, if this interests you, you can open any [CI workflow
+run](https://github.com/binkley/publishing-pipeline/actions) (drill into the
+run), and at the bottom will be an "artifact" of a ZIP with the full HTML
+coverage report.
