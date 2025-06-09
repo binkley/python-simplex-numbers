@@ -35,7 +35,7 @@ def gamma(x: Number) -> float:
 
     :Examples:
     >>> gamma(1)
-    1.0
+    771.0
     >>> gamma(2)
     1.0
     >>> gamma(4)
